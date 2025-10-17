@@ -1,0 +1,46 @@
+{
+  "allowedTables": [
+    {
+      "name": "vw_customer_sales_summary",
+      "type": "view",
+      "displayName": "Customer Sales Summary",
+      "description": "Summarized sales data by customer"
+    },
+    {
+      "name": "vw_employee_sales_summary",
+      "type": "view",
+      "displayName": "Employee Sales Summary",
+      "description": "Summarized sales performance by employee"
+    },
+    {
+      "name": "vw_order_calendar",
+      "type": "view",
+      "displayName": "Order Calendar",
+      "description": "Calendar view of orders with date information"
+    },
+    {
+      "name": "vw_order_items",
+      "type": "view",
+      "displayName": "Order Items",
+      "description": "Detailed view of order line items"
+    },
+    {
+      "name": "vw_orders",
+      "type": "view",
+      "displayName": "Orders View",
+      "description": "Enhanced orders view with additional calculations"
+    },
+    {
+      "name": "vw_product_sales_summary",
+      "type": "view",
+      "displayName": "Product Sales Summary",
+      "description": "Summarized sales data by product"
+    },
+    {
+      "name": "vw_shipments",
+      "type": "view",
+      "displayName": "Shipments",
+      "description": "Shipment tracking and delivery information"
+    }
+  ]
+}
