@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reveal SDK - Grid Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #revealView {
+            height: 100vh;
+            width: 100%;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loadingMessage" class="loading">Loading dashboard...</div>
+    <div id="revealView" style="display: none;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script>window.revealDisableKeyboardManagement = true;</script>
+    <script src="https://dl.revealbi.io/reveal/libs/1.8.0/infragistics.reveal.js"></script>
+
+    <script type="text/javascript">
+        // Get the dashboardId from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const dashboardId = urlParams.get('dashboardId');
+
+        if (!dashboardId) {
+            document.getElementById('loadingMessage').innerText = 'Error: No dashboard ID provided';
+        } else {
+            // Set the base URL for the Reveal SDK
+            $.ig.RevealSdkSettings.setBaseUrl("http://localhost:5111/");
+
+            // Load the dashboard
+            $.ig.RVDashboard.loadDashboard(dashboardId)
+                .then(dashboard => {
+                    // Hide loading message and show the dashboard
+                    document.getElementById('loadingMessage').style.display = 'none';
+                    document.getElementById('revealView').style.display = 'block';
+
+                    // Create and display the Reveal view
+                    var revealView = new $.ig.RevealView("#revealView");
+                    revealView.dashboard = dashboard;
+                })
+                .catch(error => {
+                    console.error('Error loading dashboard:', error);
+                    document.getElementById('loadingMessage').innerText = 
+                        `Error loading dashboard: ${error.message || 'Unknown error'}`;
+                });
+        }
+    </script>
+</body>
+
+</html>

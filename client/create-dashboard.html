@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #revealView {
+            width: 100%;
+            height: 100vh;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        #revealView.ready {
+            opacity: 1;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #e5e7eb;
+            border-top-color: #6A44FF;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: #374151;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading dashboard editor...</div>
+    </div>
+
+    <div id="revealView"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script src="https://dl.revealbi.io/reveal/libs/1.8.0/infragistics.reveal.js"></script>
+
+    <script type="text/javascript">
+        $.ig.RevealSdkSettings.setBaseUrl("http://localhost:5111/");
+
+        // Get query GUID from URL parameter
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        const queryGuid = getUrlParameter('guid');
+
+        // Hide loading overlay
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            const revealView = document.getElementById('revealView');
+            if (overlay) {
+                overlay.classList.add('hidden');
+            }
+            if (revealView) {
+                revealView.classList.add('ready');
+            }
+        }
+
+        let selectedDSI = null;
+        const revealView = new $.ig.RevealView("#revealView");
+        revealView.startInEditMode = true;
+
+        // Data sources requested handler
+        revealView.onDataSourcesRequested = (callback) => {
+            const sqlServerDataSource = new $.ig.RVPostgresDataSource();
+            sqlServerDataSource.id = "postgresSql";
+            sqlServerDataSource.title = "PostgreSQL Data Source";
+            sqlServerDataSource.subtitle = "Northwind Database";
+
+            // SQL Server Data Source Item with GUID
+            const sqlDataSourceItem1 = new $.ig.RVPostgresDataSourceItem(sqlServerDataSource);
+            sqlDataSourceItem1.id = queryGuid || 'default-query';
+            sqlDataSourceItem1.title = "Custom Query";
+            sqlDataSourceItem1.subtitle = queryGuid ? "Custom SQL Query from Query Builder" : "Default SQL Query";
+            selectedDSI = queryGuid;
+
+            callback(new $.ig.RevealDataSources([sqlServerDataSource], [sqlDataSourceItem1], false));
+        };
+
+        // Data source selection dialog handler - automatically select the query
+        revealView.onDataSourceSelectionDialogShowing = (args) => {
+            console.log("onDataSourceSelectionDialogShowing", args, "selectedDSI:", selectedDSI);
+            const dsi = args.dataSources.dataSourceItems.find(dsi => dsi.id === selectedDSI);
+            if (dsi) {
+                console.log("Found DSI, selecting:", dsi);
+                args.cancel = true;
+                args.callback($.ig.RVDataSourceSelection.withDataSourceItem(dsi));
+            } else {
+                console.warn("No matching DSI found for", selectedDSI);
+            }
+        };
+
+        // Function to trigger Add Visualization
+        function triggerAddVisualization() {
+            console.log("Triggering Add Visualization for DSI:", selectedDSI);
+            
+            // Show the RevealView now that we're about to trigger the visualization dialog
+            hideLoading();
+            
+            // Invoke the add visualization button click
+            if (revealView._dashboardView && revealView._dashboardView._headerView && revealView._dashboardView._headerView.__addSplitButton) {
+                console.log("Triggering mainClicked on split button");
+                revealView._dashboardView._headerView.__addSplitButton.mainClicked();
+            } else {
+                console.warn("Reveal internal objects not ready", revealView._dashboardView);
+                // If not ready, try again in a moment
+                setTimeout(triggerAddVisualization, 100);
+            }
+        }
+
+        // Ensure a dashboard is loaded (new/blank dashboard by default)
+        if (!revealView.dashboard) {
+            revealView.dashboard = new $.ig.RVDashboard();
+            console.log("Blank dashboard set");
+        }
+
+        // Automatically trigger Add Visualization after Reveal dashboard is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for the dashboard to be loaded before calling triggerAddVisualization
+            if (revealView.dashboard) {
+                console.log("Dashboard already set, calling triggerAddVisualization");
+                // Use setTimeout to ensure the dashboard is fully rendered
+                setTimeout(triggerAddVisualization, 500);
+            } else {
+                // Use the Reveal SDK dashboardLoaded event handler
+                revealView.dashboardLoaded = function() {
+                    console.log("dashboardLoaded event fired");
+                    setTimeout(triggerAddVisualization, 500);
+                };
+            }
+            console.log("dashboardLoaded handler set", typeof revealView.dashboardLoaded);
+        });
+
+        // Display current query GUID in console for debugging
+        if (queryGuid) {
+            console.log(`Dashboard initialized with query GUID: ${queryGuid}`);
+        } else {
+            console.log('No query GUID provided - using default configuration');
+        }
+    </script>
+</body>
+</html>

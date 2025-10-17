@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reveal Analytics - Query Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" title="Toggle sidebar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
+                    </svg>
+                </button>
+                <h1 class="sidebar-title">Report Builder</h1>
+            </div>
+
+            <nav class="nav-menu">
+                <ul>
+                    <li>
+                        <a href="#" class="nav-link active" data-page="queries">
+                            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                            </svg>
+                            <span class="nav-text">Queries</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link" data-page="dashboards">
+                            <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
+                            </svg>
+                            <span class="nav-text">Dashboards</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <img src="images/logo.webp" alt="Logo" class="sidebar-logo">
+                <!-- <button class="btn-create" id="createNewBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"/><path d="M12 5v14"/>
+                    </svg>
+                    <span>Create New</span>
+                </button> -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="search-box">
+                    <input type="text" placeholder="Search queries..." id="searchInput">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                    </svg>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" aria-label="Notifications" title="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" aria-label="Help" title="Help">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>
+                        </svg>
+                    </button>
+                    <img src="https://placehold.co/32x32/E2E8F0/6A44FF?text=U" alt="User Avatar" class="user-avatar">
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content" id="pageContent">
+                <!-- Queries Page -->
+                <div id="queriesPage">
+                    <div class="page-header">
+                        <h2 class="page-title">Queries</h2>
+                        <div class="page-actions">
+                            <button class="btn btn-primary" id="createQueryBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14"/><path d="M12 5v14"/>
+                                </svg>
+                                Create Query
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Queries Grid -->
+                    <div class="queries-grid" id="queriesGrid">
+                        <!-- Query cards will be dynamically inserted here -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div class="empty-state hidden" id="emptyState">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                        </svg>
+                        <h3 class="empty-state-title">No queries yet</h3>
+                        <p class="empty-state-text">Create your first query to get started</p>
+                        <button class="btn btn-primary" onclick="showQueryBuilder()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12h14"/><path d="M12 5v14"/>
+                            </svg>
+                            Create Your First Query
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Viewer Page (Hidden by default) -->
+                <div class="hidden" id="dashboardPage">
+                    <div class="back-nav">
+                        <button class="btn-back" onclick="showQueriesPage()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+                            </svg>
+                            Back to Queries
+                        </button>
+                    </div>
+                    <div class="page-header">
+                        <h2 class="page-title" id="dashboardTitle">Dashboard Viewer</h2>
+                    </div>
+                    <div class="dashboard-container">
+                        <iframe id="dashboardFrame" title="Dashboard Viewer"></iframe>
+                    </div>
+                </div>
+
+                <!-- Dashboards Page (Hidden by default) -->
+                <div class="hidden" id="dashboardsPage">
+                    <div class="page-header">
+                        <h2 class="page-title">Dashboards</h2>
+                    </div>
+
+                    <!-- Dashboard Controls -->
+                    <div class="dashboard-controls-panel">
+                        <div class="control-group">
+                            <label class="control-label" for="dashboardSelect">Select Dashboard:</label>
+                            <div class="dashboard-select-wrapper">
+                                <select id="dashboardSelect" class="dashboard-dropdown">
+                                    <option value="">Loading dashboards...</option>
+                                </select>
+                            </div>
+                            <div class="loading-status" id="dashboardLoadingStatus">
+                                <div class="spinner-small"></div>
+                                <span>Loading dashboard...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Viewer Container -->
+                    <div class="dashboard-viewer-container">
+                        <div id="revealViewContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="loading-indicator hidden" id="loadingIndicator">
+        <div class="spinner"></div>
+        <span class="loading-text">Loading...</span>
+    </div>
+
+    <!-- Create Query Modal -->
+    <div id="createQueryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Query</h3>
+                <button class="modal-close" onclick="closeCreateQueryModal()" aria-label="Close modal">&times;</button>
+            </div>
+            
+            <form id="createQueryForm" onsubmit="return false;">
+                <!-- Query Metadata Section -->
+                <div class="form-group">
+                    <label for="queryName">Friendly Name:</label>
+                    <input type="text" id="queryName" placeholder="Enter a friendly name for this query" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="queryDescription">Description:</label>
+                    <textarea id="queryDescription" placeholder="Describe what this query does or its purpose"></textarea>
+                </div>
+
+                <!-- Query Builder Section -->
+                <div class="query-builder-section">
+                    <!-- Tables Panel -->
+                    <div class="tables-panel">
+                        <div class="panel-header">Available Tables</div>
+                        <div id="tablesList" class="tables-list">
+                            <div class="fields-empty">Loading tables...</div>
+                        </div>
+                    </div>
+
+                    <!-- Fields Panel -->
+                    <div class="fields-panel">
+                        <div class="panel-header">Select Fields</div>
+                        <div id="fieldsContainer" class="fields-container">
+                            <div class="fields-empty">Select a table to view its fields</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateQueryModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="applyQuery()">Create Query</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reveal SDK Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script>window.revealDisableKeyboardManagement = true;</script>
+    <script src="https://dl.revealbi.io/reveal/libs/1.8.0/infragistics.reveal.js"></script>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>
